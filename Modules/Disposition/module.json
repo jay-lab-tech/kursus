@@ -1,0 +1,13 @@
+{
+  "name": "Disposition",
+  "alias": "disposition",
+  "description": "",
+  "keywords": [],
+  "priority": 0,
+  "providers": [
+    "Modules\\Disposition\\Providers\\DispositionServiceProvider"
+  ],
+  "aliases": {},
+  "files": [],
+  "requires": []
+}

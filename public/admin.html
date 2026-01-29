@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Sistem Akademik</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f3f4f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-custom {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .navbar-custom .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .navbar-custom .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar {
+            background: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 250px;
+            overflow-y: auto;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px 0;
+        }
+
+        .sidebar .nav-item {
+            padding: 0;
+        }
+
+        .sidebar .nav-link {
+            color: #6b7280;
+            padding: 12px 20px;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover {
+            background: #f3f4f6;
+            color: var(--primary);
+        }
+
+        .sidebar .nav-link.active {
+            background: #ede9fe;
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            margin-top: 70px;
+            padding: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-card.primary {
+            border-left-color: var(--primary);
+        }
+
+        .stat-card.success {
+            border-left-color: var(--success);
+        }
+
+        .stat-card.warning {
+            border-left-color: var(--warning);
+        }
+
+        .stat-card.danger {
+            border-left-color: var(--danger);
+        }
+
+        .stat-card .label {
+            color: #6b7280;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 10px 0;
+        }
+
+        .stat-card .change {
+            font-size: 12px;
+            color: var(--success);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .table-container table {
+            margin: 0;
+        }
+
+        .table-container th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
+        .table-container td {
+            border: 1px solid #e5e7eb;
+            vertical-align: middle;
+        }
+
+        .btn-group-sm {
+            gap: 5px;
+        }
+
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .modal-header {
+            background: var(--primary);
+            color: white;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0;
+                left: -250px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .navbar-custom {
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .nav-tabs .nav-link {
+            color: #6b7280;
+            border: none;
+            border-bottom: 3px solid #e5e7eb;
+            padding: 12px 20px;
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background: transparent;
+            border-bottom-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar-custom">
+    <div class="brand">
+        <i class="fas fa-graduation-cap"></i>
+        Admin Dashboard
+    </div>
+    <div class="user-info">
+        <div>
+            <div style="font-size: 14px; font-weight: 600; color: #1f2937;" id="userName">Loading...</div>
+            <div style="font-size: 12px; color: #6b7280;" id="userRole">-</div>
+        </div>
+        <button class="btn btn-sm btn-danger" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</nav>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <nav class="nav flex-column">
+        <a href="#dashboard" class="nav-link active" onclick="showPage('dashboard')">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="#mahasiswa" class="nav-link" onclick="showPage('mahasiswa')">
+            <i class="fas fa-users"></i> Mahasiswa
+        </a>
+        <a href="#instruktur" class="nav-link" onclick="showPage('instruktur')">
+            <i class="fas fa-chalkboard-user"></i> Instruktur
+        </a>
+        <a href="#kelas" class="nav-link" onclick="showPage('kelas')">
+            <i class="fas fa-building"></i> Kelas
+        </a>
+        <a href="#jadwal" class="nav-link" onclick="showPage('jadwal')">
+            <i class="fas fa-calendar-alt"></i> Jadwal
+        </a>
+        <a href="#letters" class="nav-link" onclick="showPage('letters')">
+            <i class="fas fa-envelope"></i> Surat
+        </a>
+        <a href="#users" class="nav-link" onclick="showPage('users')">
+            <i class="fas fa-user-gear"></i> User Management
+        </a>
+        <a href="#reports" class="nav-link" onclick="showPage('reports')">
+            <i class="fas fa-file-chart-line"></i> Laporan
+        </a>
+        <a href="#settings" class="nav-link" onclick="showPage('settings')">
+            <i class="fas fa-cog"></i> Pengaturan
+        </a>
+    </nav>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboard-page" class="page">
+        <div class="page-title">📊 Dashboard</div>
+
+        <!-- STAT CARDS -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card primary">
+                    <div class="label">Total Mahasiswa</div>
+                    <div class="value" id="stat-mahasiswa">-</div>
+                    <div class="change"><i class="fas fa-arrow-up"></i> Dari semester kemarin</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card success">
+                    <div class="label">Total Instruktur</div>
+                    <div class="value" id="stat-instruktur">-</div>
+                    <div class="change"><i class="fas fa-arrow-up"></i> Status aktif</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card warning">
+                    <div class="label">Total Kelas</div>
+                    <div class="value" id="stat-kelas">-</div>
+                    <div class="change"><i class="fas fa-arrow-right"></i> Dalam operasional</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card danger">
+                    <div class="label">Surat Tertunda</div>
+                    <div class="value" id="stat-surat">-</div>
+                    <div class="change"><i class="fas fa-exclamation"></i> Perlu ditindaklanjuti</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS ROW -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="chart-container">
+                    <h6 class="mb-3">Distribusi Mahasiswa Per Kelas</h6>
+                    <canvas id="chartMahasiswa"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="chart-container">
+                    <h6 class="mb-3">Status Surat Masuk</h6>
+                    <canvas id="chartSurat"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECENT ACTIVITY -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="table-container">
+                    <h6 class="mb-3">Mahasiswa Terbaru</h6>
+                    <table class="table table-sm" id="tableMahasiswaTerbaru">
+                        <thead>
+                            <tr>
+                                <th>NIM</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="3" class="text-center py-3"><div class="loading"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="table-container">
+                    <h6 class="mb-3">Surat Masuk Terbaru</h6>
+                    <table class="table table-sm" id="tableSuratTerbaru">
+                        <thead>
+                            <tr>
+                                <th>Nomor</th>
+                                <th>Dari</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="3" class="text-center py-3"><div class="loading"></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAHASISWA PAGE -->
+    <div id="mahasiswa-page" class="page hidden">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="page-title">👥 Manajemen Mahasiswa</div>
+            <button class="btn btn-primary" onclick="showAddMahasiswaModal()">
+                <i class="fas fa-plus"></i> Tambah Mahasiswa
+            </button>
+        </div>
+
+        <div class="table-container">
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Cari mahasiswa..." id="searchMahasiswa" onkeyup="searchTable('mahasiswa')">
+            </div>
+            <table class="table" id="tableMahasiswa">
+                <thead>
+                    <tr>
+                        <th>NIM</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Telepon</th>
+                        <th>Kelas</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="7" class="text-center py-3"><div class="loading"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- INSTRUKTUR PAGE -->
+    <div id="instruktur-page" class="page hidden">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="page-title">👨‍🏫 Manajemen Instruktur</div>
+            <button class="btn btn-primary" onclick="showAddInstrukturModal()">
+                <i class="fas fa-plus"></i> Tambah Instruktur
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="table" id="tableInstruktur">
+                <thead>
+                    <tr>
+                        <th>NIP</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Telepon</th>
+                        <th>Spesialisasi</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="7" class="text-center py-3"><div class="loading"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- KELAS PAGE -->
+    <div id="kelas-page" class="page hidden">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="page-title">🏫 Manajemen Kelas</div>
+            <button class="btn btn-primary" onclick="showAddKelasModal()">
+                <i class="fas fa-plus"></i> Tambah Kelas
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="table" id="tableKelas">
+                <thead>
+                    <tr>
+                        <th>Kode</th>
+                        <th>Nama Kelas</th>
+                        <th>Tahun</th>
+                        <th>Maks Siswa</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="6" class="text-center py-3"><div class="loading"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JADWAL PAGE -->
+    <div id="jadwal-page" class="page hidden">
+        <div class="page-title mb-4">📅 Jadwal Kelas</div>
+
+        <div class="table-container">
+            <table class="table" id="tableJadwal">
+                <thead>
+                    <tr>
+                        <th>Mata Kuliah</th>
+                        <th>Kelas</th>
+                        <th>Instruktur</th>
+                        <th>Hari</th>
+                        <th>Jam</th>
+                        <th>Ruangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="6" class="text-center py-3"><div class="loading"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- LETTERS PAGE -->
+    <div id="letters-page" class="page hidden">
+        <div class="page-title mb-4">📮 Manajemen Surat</div>
+
+        <ul class="nav nav-tabs mb-3">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" onclick="loadLetters('masuk')">Surat Masuk</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" onclick="loadLetters('keluar')">Surat Keluar</a>
+            </li>
+        </ul>
+
+        <div class="table-container">
+            <table class="table" id="tableLetters">
+                <thead>
+                    <tr>
+                        <th>Nomor Surat</th>
+                        <th>Dari/Ke</th>
+                        <th>Perihal</th>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="6" class="text-center py-3"><div class="loading"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- USER MANAGEMENT PAGE -->
+    <div id="users-page" class="page hidden">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="page-title">👤 Manajemen Pengguna</div>
+            <button class="btn btn-primary" onclick="showAddUserModal()">
+                <i class="fas fa-plus"></i> Tambah Pengguna
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table class="table" id="tableUsers">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Nama</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Dibuat</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="6" class="text-center py-3"><div class="loading"></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- REPORTS PAGE -->
+    <div id="reports-page" class="page hidden">
+        <div class="page-title mb-4">📊 Laporan</div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Jenis Laporan</label>
+                    <select class="form-control" id="reportType">
+                        <option value="mahasiswa">Laporan Mahasiswa</option>
+                        <option value="instruktur">Laporan Instruktur</option>
+                        <option value="akademik">Laporan Akademik</option>
+                        <option value="surat">Laporan Surat</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Dari Tanggal</label>
+                    <input type="date" class="form-control" id="reportFromDate">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-primary form-control" onclick="generateReport()">
+                        <i class="fas fa-download"></i> Generate Laporan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container" id="reportContainer" style="display:none;">
+            <table class="table" id="reportTable">
+                <thead id="reportHead"></thead>
+                <tbody id="reportBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div id="settings-page" class="page hidden">
+        <div class="page-title mb-4">⚙️ Pengaturan Sistem</div>
+
+        <div class="table-container">
+            <form onsubmit="saveSettings(event)">
+                <div class="mb-3">
+                    <label class="form-label">Nama Institusi</label>
+                    <input type="text" class="form-control" id="settingInstitution" placeholder="Nama institusi akademik">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Email Institusi</label>
+                    <input type="email" class="form-control" id="settingEmail" placeholder="Email institusi">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tahun Akademik</label>
+                    <input type="text" class="form-control" id="settingAcademicYear" placeholder="Misal: 2025/2026">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Semester</label>
+                    <select class="form-control" id="settingSemester">
+                        <option value="1">Semester 1 (Ganjil)</option>
+                        <option value="2">Semester 2 (Genap)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Telepon Institusi</label>
+                    <input type="tel" class="form-control" id="settingPhone" placeholder="Nomor telepon">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Alamat Institusi</label>
+                    <textarea class="form-control" id="settingAddress" rows="3" placeholder="Alamat lengkap institusi"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Simpan Pengaturan
+                </button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const API_BASE = 'http://127.0.0.1/laravel-starter/public/api';
+let currentPage = 'dashboard';
+let charts = {};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    loadUserInfo();
+    loadDashboard();
+});
+
+// Load User Info
+async function loadUserInfo() {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/auth/me`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const user = await response.json();
+            document.getElementById('userName').textContent = user.name || 'User';
+            document.getElementById('userRole').textContent = user.role || 'User';
+        }
+    } catch (error) {
+        console.error('Error loading user:', error);
+    }
+}
+
+// Load Dashboard
+async function loadDashboard() {
+    const token = localStorage.getItem('auth_token');
+    
+    try {
+        // Load Mahasiswa
+        const mahasiswaRes = await fetch(`${API_BASE}/mahasiswa`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (mahasiswaRes.ok) {
+            const data = await mahasiswaRes.json();
+            document.getElementById('stat-mahasiswa').textContent = data.data?.length || 0;
+        }
+
+        // Load Instruktur
+        const instrukturRes = await fetch(`${API_BASE}/instruktur`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (instrukturRes.ok) {
+            const data = await instrukturRes.json();
+            document.getElementById('stat-instruktur').textContent = data.data?.length || 0;
+        }
+
+        // Load Kelas
+        const kelasRes = await fetch(`${API_BASE}/kelas`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (kelasRes.ok) {
+            const data = await kelasRes.json();
+            document.getElementById('stat-kelas').textContent = data.data?.length || 0;
+        }
+
+        // Load Surat
+        const suratRes = await fetch(`${API_BASE}/surat-masuk`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (suratRes.ok) {
+            const data = await suratRes.json();
+            document.getElementById('stat-surat').textContent = data.data?.length || 0;
+        }
+
+        // Load Tables
+        loadMahasiswaTerbaru();
+        loadSuratTerbaru();
+        initCharts();
+
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+}
+
+// Load Mahasiswa Terbaru
+async function loadMahasiswaTerbaru() {
+    const token = localStorage.getItem('auth_token');
+    try {
+        const response = await fetch(`${API_BASE}/mahasiswa?per_page=5`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const { data } = await response.json();
+            const tbody = document.querySelector('#tableMahasiswaTerbaru tbody');
+            tbody.innerHTML = data.map(m => `
+                <tr>
+                    <td>${m.nim || '-'}</td>
+                    <td>${m.name || '-'}</td>
+                    <td>${m.email || '-'}</td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading mahasiswa terbaru:', error);
+    }
+}
+
+// Load Surat Terbaru
+async function loadSuratTerbaru() {
+    const token = localStorage.getItem('auth_token');
+    try {
+        const response = await fetch(`${API_BASE}/surat-masuk?per_page=5`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const { data } = await response.json();
+            const tbody = document.querySelector('#tableSuratTerbaru tbody');
+            tbody.innerHTML = data.map(s => `
+                <tr>
+                    <td>${s.nomor_surat || '-'}</td>
+                    <td>${s.dari || '-'}</td>
+                    <td><span class="badge bg-info">${s.status || 'pending'}</span></td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading surat terbaru:', error);
+    }
+}
+
+// Initialize Charts
+function initCharts() {
+    // Chart Mahasiswa
+    const ctx1 = document.getElementById('chartMahasiswa');
+    if (ctx1 && !charts.mahasiswa) {
+        charts.mahasiswa = new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['TI-2A', 'TI-2B', 'TI-2C'],
+                datasets: [{
+                    data: [25, 28, 22],
+                    backgroundColor: ['#4f46e5', '#06b6d4', '#10b981']
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    // Chart Surat
+    const ctx2 = document.getElementById('chartSurat');
+    if (ctx2 && !charts.surat) {
+        charts.surat = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Registered', 'Processed', 'Completed'],
+                datasets: [{
+                    label: 'Jumlah Surat',
+                    data: [15, 8, 12],
+                    backgroundColor: '#4f46e5'
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+}
+
+// Show Page
+function showPage(page) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+    // Show selected page
+    document.getElementById(`${page}-page`).classList.remove('hidden');
+    // Update nav
+    document.querySelectorAll('.sidebar .nav-link').forEach(l => l.classList.remove('active'));
+    event.target.closest('.nav-link').classList.add('active');
+
+    currentPage = page;
+
+    // Load page data
+    if (page === 'mahasiswa') loadMahasiswaTable();
+    else if (page === 'instruktur') loadInstrukturTable();
+    else if (page === 'kelas') loadKelasTable();
+    else if (page === 'jadwal') loadJadwalTable();
+    else if (page === 'letters') loadLetters('masuk');
+    else if (page === 'users') loadUsersTable();
+}
+
+// Load Mahasiswa Table
+async function loadMahasiswaTable() {
+    const token = localStorage.getItem('auth_token');
+    try {
+        const response = await fetch(`${API_BASE}/mahasiswa`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const { data } = await response.json();
+            const tbody = document.querySelector('#tableMahasiswa tbody');
+            tbody.innerHTML = data.map(m => `
+                <tr>
+                    <td>${m.nim || '-'}</td>
+                    <td>${m.name || '-'}</td>
+                    <td>${m.email || '-'}</td>
+                    <td>${m.phone || '-'}</td>
+                    <td>${m.kelas_id ? 'Class ' + m.kelas_id : '-'}</td>
+                    <td><span class="badge-status status-active">${m.status || 'active'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteMahasiswa(${m.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading mahasiswa:', error);
+    }
+}
+
+// Load Instruktur Table
+async function loadInstrukturTable() {
+    const token = localStorage.getItem('auth_token');
+    try {
+        const response = await fetch(`${API_BASE}/instruktur`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const { data } = await response.json();
+            const tbody = document.querySelector('#tableInstruktur tbody');
+            tbody.innerHTML = data.map(i => `
+                <tr>
+                    <td>${i.nip || '-'}</td>
+                    <td>${i.name || '-'}</td>
+                    <td>${i.email || '-'}</td>
+                    <td>${i.phone || '-'}</td>
+                    <td>${i.specialization || '-'}</td>
+                    <td><span class="badge-status status-active">${i.status || 'active'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading instruktur:', error);
+    }
+}
+
+// Load Kelas Table
+async function loadKelasTable() {
+    const token = localStorage.getItem('auth_token');
+    try {
+        const response = await fetch(`${API_BASE}/kelas`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const { data } = await response.json();
+            const tbody = document.querySelector('#tableKelas tbody');
+            tbody.innerHTML = data.map(k => `
+                <tr>
+                    <td>${k.code || '-'}</td>
+                    <td>${k.name || '-'}</td>
+                    <td>${k.year || '-'}</td>
+                    <td>${k.max_students || '-'}</td>
+                    <td><span class="badge-status status-active">${k.status || 'active'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading kelas:', error);
+    }
+}
+
+// Load Jadwal Table
+async function loadJadwalTable() {
+    const token = localStorage.getItem('auth_token');
+    try {
+        const response = await fetch(`${API_BASE}/jadwal`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const { data } = await response.json();
+            const tbody = document.querySelector('#tableJadwal tbody');
+            tbody.innerHTML = data.map(j => `
+                <tr>
+                    <td>${j.mata_kuliah || '-'}</td>
+                    <td>${j.kelas_id || '-'}</td>
+                    <td>${j.instruktur_id || '-'}</td>
+                    <td>${j.hari || '-'}</td>
+                    <td>${j.jam_mulai || '-'} - ${j.jam_selesai || '-'}</td>
+                    <td>${j.ruangan || '-'}</td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading jadwal:', error);
+    }
+}
+
+// Load Letters
+async function loadLetters(type) {
+    const token = localStorage.getItem('auth_token');
+    const endpoint = type === 'masuk' ? 'surat-masuk' : 'surat-keluar';
+    
+    try {
+        const response = await fetch(`${API_BASE}/${endpoint}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const { data } = await response.json();
+            const tbody = document.querySelector('#tableLetters tbody');
+            tbody.innerHTML = data.map(l => `
+                <tr>
+                    <td>${l.nomor_surat || '-'}</td>
+                    <td>${type === 'masuk' ? l.dari : l.tujuan || '-'}</td>
+                    <td>${l.perihal || '-'}</td>
+                    <td>${l.tanggal_terima || l.tanggal_kirim || '-'}</td>
+                    <td><span class="badge bg-info">${l.status || 'pending'}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-info" title="View"><i class="fas fa-eye"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading letters:', error);
+    }
+}
+
+// Load Users Table
+async function loadUsersTable() {
+    const token = localStorage.getItem('auth_token');
+    try {
+        const response = await fetch(`${API_BASE}/users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const users = Array.isArray(response.json) ? await response.json() : [];
+            const tbody = document.querySelector('#tableUsers tbody');
+            tbody.innerHTML = users.slice(0, 10).map(u => `
+                <tr>
+                    <td>${u.email || '-'}</td>
+                    <td>${u.name || '-'}</td>
+                    <td><span class="badge bg-primary">${u.role || 'user'}</span></td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>${u.created_at || '-'}</td>
+                    <td>
+                        <button class="btn btn-sm btn-info" title="Edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+    } catch (error) {
+        console.error('Error loading users:', error);
+    }
+}
+
+// Modal Functions
+function showAddMahasiswaModal() {
+    alert('Modal untuk tambah mahasiswa akan muncul di sini');
+}
+
+function showAddInstrukturModal() {
+    alert('Modal untuk tambah instruktur akan muncul di sini');
+}
+
+function showAddKelasModal() {
+    alert('Modal untuk tambah kelas akan muncul di sini');
+}
+
+function showAddUserModal() {
+    alert('Modal untuk tambah user akan muncul di sini');
+}
+
+// Delete Functions
+function deleteMahasiswa(id) {
+    if (confirm('Hapus mahasiswa ini?')) {
+        console.log('Delete mahasiswa:', id);
+    }
+}
+
+// Generate Report
+function generateReport() {
+    const type = document.getElementById('reportType').value;
+    alert('Generate laporan: ' + type);
+}
+
+// Save Settings
+function saveSettings(event) {
+    event.preventDefault();
+    alert('Pengaturan tersimpan!');
+}
+
+// Search Table
+function searchTable(type) {
+    const input = document.getElementById(`search${type.charAt(0).toUpperCase() + type.slice(1)}`);
+    if (!input) return;
+    
+    const filter = input.value.toLowerCase();
+    const table = document.querySelector(`#table${type.charAt(0).toUpperCase() + type.slice(1)} tbody`);
+    const rows = table.querySelectorAll('tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+}
+
+// Logout
+function logout() {
+    if (confirm('Logout?')) {
+        localStorage.removeItem('auth_token');
+        window.location.href = 'login.html';
+    }
+}
+</script>
+
+</body>
+</html>

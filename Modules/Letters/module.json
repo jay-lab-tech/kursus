@@ -1,0 +1,13 @@
+{
+  "name": "Letters",
+  "alias": "letters",
+  "description": "",
+  "keywords": [],
+  "priority": 0,
+  "providers": [
+    "Modules\\Letters\\Providers\\LettersServiceProvider"
+  ],
+  "aliases": {},
+  "files": [],
+  "requires": []
+}

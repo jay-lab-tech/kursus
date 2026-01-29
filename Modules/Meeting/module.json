@@ -1,0 +1,13 @@
+{
+  "name": "Meeting",
+  "alias": "meeting",
+  "description": "",
+  "keywords": [],
+  "priority": 0,
+  "providers": [
+    "Modules\\Meeting\\Providers\\MeetingServiceProvider"
+  ],
+  "aliases": {},
+  "files": [],
+  "requires": []
+}

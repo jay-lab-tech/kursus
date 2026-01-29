@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Debug</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f0f0f0; }
+        .box { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #4f46e5; }
+        .error { border-left-color: #ef4444; background: #fee2e2; }
+        .success { border-left-color: #10b981; background: #dcfce7; }
+        .info { border-left-color: #3b82f6; background: #dbeafe; }
+        pre { background: #000; color: #0f0; padding: 10px; overflow-x: auto; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #4f46e5; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 API & Login Debug</h1>
+    
+    <div class="box info">
+        <h3>1. Check API Endpoint</h3>
+        <button onclick="testAPI()">Test Login API</button>
+        <pre id="apiResult">Loading...</pre>
+    </div>
+
+    <div class="box info">
+        <h3>2. Check Redirect URL</h3>
+        <button onclick="testRedirect()">Test Redirect Logic</button>
+        <pre id="redirectResult">Click button to test...</pre>
+    </div>
+
+    <div class="box info">
+        <h3>3. Simulate Login</h3>
+        <button onclick="simulateLogin()">Simulate Full Login</button>
+        <pre id="simResult">Click button to simulate...</pre>
+    </div>
+
+    <script>
+        const API_URL = 'http://127.0.0.1/laravel-starter/public/api';
+
+        function log(id, text, isError = false) {
+            const elem = document.getElementById(id);
+            const prefix = isError ? '❌ ERROR: ' : '✅ ';
+            elem.textContent = prefix + text;
+            if (isError) elem.parentElement.classList.add('error');
+        }
+
+        async function testAPI() {
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@example.com',
+                        password: 'password123'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log('apiResult', `
+API RESPONSE OK:
+Status: ${response.status}
+User: ${data.user.name}
+Role: ${data.user.role}
+Token: ${data.access_token.substring(0, 40)}...
+                    `);
+                } else {
+                    log('apiResult', `
+API ERROR:
+Status: ${response.status}
+Message: ${JSON.stringify(data, null, 2)}
+                    `, true);
+                }
+            } catch (error) {
+                log('apiResult', `Network Error: ${error.message}`, true);
+            }
+        }
+
+        function testRedirect() {
+            try {
+                const origin = window.location.origin;
+                const pathname = window.location.pathname;
+                const baseUrl = origin + pathname.split('/login')[0];
+                
+                log('redirectResult', `
+Current Location:
+  origin: ${origin}
+  pathname: ${pathname}
+  baseUrl: ${baseUrl}
+
+Redirect URLs:
+  Admin: ${baseUrl}/admin
+  Others: ${baseUrl}/dashboard
+                `);
+            } catch (error) {
+                log('redirectResult', `Error: ${error.message}`, true);
+            }
+        }
+
+        async function simulateLogin() {
+            try {
+                log('simResult', 'Starting login simulation...');
+                
+                // Step 1: API Call
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@example.com',
+                        password: 'password123'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                // Step 2: Store token
+                localStorage.setItem('auth_token', data.access_token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                // Step 3: Calculate redirect
+                const origin = window.location.origin;
+                const pathname = window.location.pathname;
+                const baseUrl = origin + pathname.split('/login')[0];
+                const redirectUrl = data.user.role === 'admin' 
+                    ? baseUrl + '/admin'
+                    : baseUrl + '/dashboard';
+
+                log('simResult', `
+LOGIN SUCCESS:
+✅ Token stored: ${data.access_token.substring(0, 40)}...
+✅ User stored: ${data.user.email} (${data.user.role})
+✅ Redirect URL: ${redirectUrl}
+
+Now redirecting in 2 seconds...
+                `);
+
+                // Step 4: Redirect (commented out for debug)
+                // setTimeout(() => {
+                //     window.location.href = redirectUrl;
+                // }, 2000);
+
+            } catch (error) {
+                log('simResult', `Error: ${error.message}`, true);
+            }
+        }
+
+        // Run tests on load
+        window.onload = () => {
+            testRedirect();
+        };
+    </script>
+</body>
+</html>
