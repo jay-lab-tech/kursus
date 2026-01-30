@@ -20,17 +20,20 @@ class RisalahController extends Controller
         try {
             $user = Auth::user();
             
-            // Get instruktur data
-            $instruktur = Instruktur::where('user_id', $user->id)->first();
-            if (!$instruktur) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Instruktur not found'
-                ], 404);
+            // Build query
+            $query = Risalah::with('kelas', 'instruktur');
+            
+            // Filter: If instruktur, only show their own risalah
+            if ($user->role === 'instruktur') {
+                $instruktur = Instruktur::where('user_id', $user->id)->first();
+                if (!$instruktur) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Instruktur not found'
+                    ], 404);
+                }
+                $query->where('instruktur_id', $instruktur->id);
             }
-
-            $query = Risalah::where('instruktur_id', $instruktur->id)
-                ->with('kelas', 'instruktur');
             
             // Search
             if ($request->has('search') && !empty($request->get('search'))) {
@@ -129,27 +132,38 @@ class RisalahController extends Controller
             ]);
 
             $user = Auth::user();
-            $instruktur = Instruktur::where('user_id', $user->id)->first();
+            $instruktur = null;
 
-            if (!$instruktur) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Instruktur not found'
-                ], 404);
+            // If instruktur, get their instruktur record
+            if ($user->role === 'instruktur') {
+                $instruktur = Instruktur::where('user_id', $user->id)->first();
+                if (!$instruktur) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Instruktur not found'
+                    ], 404);
+                }
+
+                // Verify instruktur teaches this kelas
+                $kelas = Kelas::find($request->kelas_id);
+                if ($kelas->instruktur_id !== $instruktur->id) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You do not teach this class'
+                    ], 403);
+                }
             }
 
-            // Verify instruktur teaches this kelas
-            $kelas = Kelas::find($request->kelas_id);
-            if ($kelas->instruktur_id !== $instruktur->id) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You do not teach this class'
-                ], 403);
+            // For admin, we need to get instruktur_id from kelas
+            if ($user->role === 'admin') {
+                $kelas = Kelas::find($request->kelas_id);
+                $instruktur_id = $kelas->instruktur_id;
+            } else {
+                $instruktur_id = $instruktur->id;
             }
 
             $risalah = Risalah::create([
                 'kelas_id' => $request->kelas_id,
-                'instruktur_id' => $instruktur->id,
                 'tanggal' => $request->tanggal,
                 'judul' => $request->judul,
                 'isi' => $request->isi,
@@ -185,9 +199,9 @@ class RisalahController extends Controller
                 ], 404);
             }
 
-            // Check authorization
+            // Check authorization - only allow if instruktur owns it or user is admin
             $user = Auth::user();
-            if ($risalah->instruktur->user_id !== $user->id) {
+            if ($user->role === 'instruktur' && $risalah->instruktur->user_id !== $user->id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized'
@@ -236,9 +250,9 @@ class RisalahController extends Controller
                 ], 404);
             }
 
-            // Check authorization
+            // Check authorization - only allow if instruktur owns it or user is admin
             $user = Auth::user();
-            if ($risalah->instruktur->user_id !== $user->id) {
+            if ($user->role === 'instruktur' && $risalah->instruktur->user_id !== $user->id) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized'

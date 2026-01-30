@@ -60,6 +60,16 @@ Route::group([], function () {
         return view('spa.mahasiswa-dashboard');
     })->name('mahasiswa-dashboard');
     
+    // Risalah Dashboard
+    Route::get('risalah-dashboard', function () {
+        return view('spa.risalah-dashboard');
+    })->name('risalah-dashboard');
+    
+    // Risalah Dashboard New (Data Management Style)
+    Route::get('risalah-dashboard-new', function () {
+        return view('spa.risalah-dashboard-new');
+    })->name('risalah-dashboard-new');
+    
     // Instruktur Dashboard
     Route::get('instruktur-dashboard', function () {
         return view('spa.instruktur-dashboard');

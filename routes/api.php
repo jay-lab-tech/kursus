@@ -56,11 +56,13 @@ Route::put('/mahasiswa/{id}', [MahasiswaController::class, 'update'])->middlewar
 Route::delete('/mahasiswa/{id}', [MahasiswaController::class, 'destroy'])->middleware(['auth:sanctum', 'role.authorize:admin']);
 
 // Instruktur routes
-Route::get('/instruktur', [InstrukturController::class, 'index']);
-Route::get('/instruktur/{id}', [InstrukturController::class, 'show']);
-Route::post('/instruktur', [InstrukturController::class, 'store'])->middleware(['auth:sanctum', 'role.authorize:admin']);
-Route::put('/instruktur/{id}', [InstrukturController::class, 'update'])->middleware(['auth:sanctum', 'role.authorize:admin']);
-Route::delete('/instruktur/{id}', [InstrukturController::class, 'destroy'])->middleware(['auth:sanctum', 'role.authorize:admin']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/instruktur', [InstrukturController::class, 'index']);
+    Route::get('/instruktur/{id}', [InstrukturController::class, 'show']);
+    Route::post('/instruktur', [InstrukturController::class, 'store'])->middleware('role.authorize:admin');
+    Route::put('/instruktur/{id}', [InstrukturController::class, 'update'])->middleware('role.authorize:admin');
+    Route::delete('/instruktur/{id}', [InstrukturController::class, 'destroy'])->middleware('role.authorize:admin');
+});
 
 // Kelas routes - IMPORTANT: /kelas/available MUST come before /kelas/{id} to avoid route conflict
 Route::get('/kelas/available', [KelasController::class, 'getAvailableKelas']);
@@ -113,9 +115,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // DELETE - Unenroll (batalkan daftar) dari kelas
     Route::delete('/mahasiswa/{userId}/kelas/{kelasId}/unenroll', [KelasController::class, 'unenrollKelas']);
     
-    // ========== RISALAH ROUTES (Instruktur Management) ==========
-    Route::middleware('role.authorize:instruktur')->group(function () {
-        // Risalah CRUD - only instruktur can manage
+    // ========== RISALAH ROUTES (Instruktur & Admin Management) ==========
+    Route::middleware('role.authorize:instruktur,admin')->group(function () {
+        // Risalah CRUD - instruktur and admin can manage
         Route::get('/risalah', [RisalahController::class, 'index']);
         Route::post('/risalah', [RisalahController::class, 'store']);
         Route::get('/risalah/{id}', [RisalahController::class, 'show']);

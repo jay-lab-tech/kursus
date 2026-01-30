@@ -125,7 +125,7 @@
             <li data-role="admin"><a href="#" onclick="selectModule('kelas'); return false;" class="nav-link" data-module="kelas"><i class="fas fa-book"></i> <span>Kelas</span></a></li>
             <li data-role="admin"><a href="#" onclick="selectModule('jadwal'); return false;" class="nav-link" data-module="jadwal"><i class="fas fa-calendar"></i> <span>Jadwal</span></a></li>
             <li data-role="admin"><a href="#" onclick="selectModule('surat'); return false;" class="nav-link" data-module="surat"><i class="fas fa-envelope"></i> <span>Surat</span></a></li>
-            <li data-role="instruktur admin" style="margin-top: 20px;"><a href="/risalah" class="nav-link"><i class="fas fa-file-alt"></i> <span>Risalah</span></a></li>
+            <li data-role="instruktur admin" style="margin-top: 20px;"><a href="/risalah-dashboard-new" class="nav-link"><i class="fas fa-file-alt"></i> <span>Risalah</span></a></li>
             <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
             <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
         </ul>
@@ -211,16 +211,13 @@
                 <div class="form-group" id="fieldRole">
                     <label>Role *</label>
                     <select id="formRole">
-                        <option value="mahasiswa">Mahasiswa</option>
-                        <option value="instruktur">Instruktur</option>
-                        <option value="admin">Admin</option>
+                        <option value="">-- Loading --</option>
                     </select>
                 </div>
                 <div class="form-group" id="fieldStatus">
                     <label>Status</label>
                     <select id="formStatus">
-                        <option value="1">Aktif</option>
-                        <option value="0">Nonaktif</option>
+                        <option value="">-- Loading --</option>
                     </select>
                 </div>
 
@@ -229,6 +226,7 @@
                     <label>Instruktur *</label>
                     <select id="formInstruktur">
                         <option value="">-- Select Instruktur --</option>
+
                     </select>
                 </div>
                 <div class="form-group" id="fieldKodeKelas" style="display: none;">
@@ -263,13 +261,7 @@
                 <div class="form-group" id="fieldHari" style="display: none;">
                     <label>Hari *</label>
                     <select id="formHari">
-                        <option value="">-- Select Hari --</option>
-                        <option value="1">Senin</option>
-                        <option value="2">Selasa</option>
-                        <option value="3">Rabu</option>
-                        <option value="4">Kamis</option>
-                        <option value="5">Jumat</option>
-                        <option value="6">Sabtu</option>
+                        <option value="">-- Loading --</option>
                     </select>
                 </div>
                 <div class="form-group" id="fieldJamMulai" style="display: none;">
@@ -508,22 +500,109 @@
         }
 
         async function loadInstrukturDropdown() {
+            const select = document.getElementById('formInstruktur');
+            if (!select) return;
+
             try {
                 const token = localStorage.getItem('auth_token');
-                // Fetch semua instruktur dari instruktur table, bukan dari users
-                const response = await fetch(`${API_BASE}/instruktur?per_page=100`, { 
+                const url = `${API_BASE}/instruktur/dropdown`;
+                const response = await fetch(url, { 
+                    headers: { 'Authorization': `Bearer ${token}` } 
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const instrukturList = data.data || [];
+                    
+                    if (instrukturList.length === 0) {
+                        select.innerHTML = '<option value="">-- Tidak ada instruktur --</option>';
+                        return;
+                    }
+                    
+                    const options = instrukturList
+                        .map(i => `<option value="${i.id}">${i.nama}</option>`)
+                        .join('');
+                    
+                    select.innerHTML = '<option value="">-- Select Instruktur --</option>' + options;
+                } else {
+                    select.innerHTML = '<option value="">-- Error --</option>';
+                }
+            } catch (e) { 
+                const select = document.getElementById('formInstruktur');
+                if (select) select.innerHTML = '<option value="">-- Error loading --</option>';
+            }
+        }
+
+        async function loadRoleDropdown() {
+            try {
+                const token = localStorage.getItem('auth_token');
+                const response = await fetch(`${API_BASE}/roles`, { 
                     headers: { 'Authorization': `Bearer ${token}` } 
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    const select = document.getElementById('formInstruktur');
-                    // Map instruktur dengan field 'nama' (bukan nama_instruktur)
-                    const options = data.data.map(i => `<option value="${i.id}">${i.nama}</option>`).join('');
-                    select.innerHTML = '<option value="">-- Select Instruktur --</option>' + options;
+                    const select = document.getElementById('formRole');
+                    const options = data.data.map(r => `<option value="${r.id || r.name}">${r.name}</option>`).join('');
+                    select.innerHTML = options;
                 } else {
-                    console.error('Failed to load instruktur:', response.statusText);
+                    // Fallback ke hardcoded jika API tidak tersedia
+                    const select = document.getElementById('formRole');
+                    select.innerHTML = '<option value="mahasiswa">Mahasiswa</option><option value="instruktur">Instruktur</option><option value="admin">Admin</option>';
                 }
-            } catch (e) { console.error('Error loading instruktur:', e); }
+            } catch (e) { 
+                // Fallback ke hardcoded jika API tidak tersedia
+                const select = document.getElementById('formRole');
+                select.innerHTML = '<option value="mahasiswa">Mahasiswa</option><option value="instruktur">Instruktur</option><option value="admin">Admin</option>';
+                console.warn('Error loading roles, using fallback:', e); 
+            }
+        }
+
+        async function loadStatusDropdown() {
+            try {
+                const token = localStorage.getItem('auth_token');
+                const response = await fetch(`${API_BASE}/statuses`, { 
+                    headers: { 'Authorization': `Bearer ${token}` } 
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('formStatus');
+                    const options = data.data.map(s => `<option value="${s.id || s.value}">${s.name || s.label}</option>`).join('');
+                    select.innerHTML = options;
+                } else {
+                    // Fallback ke hardcoded
+                    const select = document.getElementById('formStatus');
+                    select.innerHTML = '<option value="1">Aktif</option><option value="0">Nonaktif</option>';
+                }
+            } catch (e) { 
+                // Fallback ke hardcoded
+                const select = document.getElementById('formStatus');
+                select.innerHTML = '<option value="1">Aktif</option><option value="0">Nonaktif</option>';
+                console.warn('Error loading statuses, using fallback:', e); 
+            }
+        }
+
+        async function loadHariDropdown() {
+            try {
+                const token = localStorage.getItem('auth_token');
+                const response = await fetch(`${API_BASE}/hari`, { 
+                    headers: { 'Authorization': `Bearer ${token}` } 
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('formHari');
+                    const options = data.data.map(h => `<option value="${h.id}">${h.nama}</option>`).join('');
+                    select.innerHTML = '<option value="">-- Select Hari --</option>' + options;
+                } else {
+                    // Fallback ke hardcoded
+                    const select = document.getElementById('formHari');
+                    select.innerHTML = '<option value="">-- Select Hari --</option><option value="1">Senin</option><option value="2">Selasa</option><option value="3">Rabu</option><option value="4">Kamis</option><option value="5">Jumat</option><option value="6">Sabtu</option>';
+                }
+            } catch (e) { 
+                // Fallback ke hardcoded
+                const select = document.getElementById('formHari');
+                select.innerHTML = '<option value="">-- Select Hari --</option><option value="1">Senin</option><option value="2">Selasa</option><option value="3">Rabu</option><option value="4">Kamis</option><option value="5">Jumat</option><option value="6">Sabtu</option>';
+                console.warn('Error loading hari, using fallback:', e); 
+            }
         }
 
         async function loadKelasDropdown() {
@@ -581,6 +660,12 @@
             document.getElementById('dataForm').reset();
             showFormFieldsForModule(currentModule);
             document.getElementById('formModal').classList.add('active');
+            
+            // Load dropdowns untuk semua module
+            loadRoleDropdown();
+            loadStatusDropdown();
+            loadHariDropdown();
+            
             if (currentModule === 'kelas') loadInstrukturDropdown();
             if (currentModule === 'jadwal') { loadKelasDropdown(); }
         }
@@ -779,6 +864,11 @@
                 editingUserId = id;
                 document.getElementById('modalTitle').textContent = `Edit ${currentModule}`;
                 showFormFieldsForModule(currentModule);
+                
+                // Load semua dropdowns
+                await loadRoleDropdown();
+                await loadStatusDropdown();
+                await loadHariDropdown();
                 
                 if (currentModule === 'kelas') {
                     await loadInstrukturDropdown();

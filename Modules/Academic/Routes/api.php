@@ -8,6 +8,7 @@ use Modules\Academic\Http\Controllers\JadwalController;
 
 // Public routes (no auth required for GET)
 Route::get('/mahasiswa', [MahasiswaController::class, 'index']);
+Route::get('/instruktur/dropdown', [InstrukturController::class, 'dropdown']); // Put specific routes before {id}
 Route::get('/instruktur', [InstrukturController::class, 'index']);
 Route::get('/kelas', [KelasController::class, 'index']);
 Route::get('/jadwal', [JadwalController::class, 'index']);

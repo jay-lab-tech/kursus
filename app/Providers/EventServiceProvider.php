@@ -23,7 +23,6 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Backend\UserCreated' => [
             'App\Listeners\Backend\UserCreated\UserCreatedProfileCreate',
             'App\Listeners\Backend\UserCreated\UserCreatedNotifySuperUser',
-            'App\Listeners\Backend\UserCreated\CreateMahasiswaProfile',
         ],
         'App\Events\Backend\UserUpdated' => [
             'App\Listeners\Backend\UserUpdated\UserUpdatedNotifyUser',

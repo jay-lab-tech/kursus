@@ -47,6 +47,28 @@ class InstrukturController extends Controller
         }
     }
 
+    /**
+     * Get all instruktur for dropdown (simple list, no pagination)
+     */
+    public function dropdown(Request $request)
+    {
+        try {
+            $instruktur = Instruktur::select('id', 'nama')
+                ->orderBy('nama', 'asc')
+                ->get();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $instruktur
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching instruktur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function create()
     {
         return view('instruktur.create');

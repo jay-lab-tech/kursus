@@ -191,25 +191,15 @@
                 </span>
             </button>
         </form>
-
         <div class="demo-users">
-            <p style="margin-bottom: 10px;"><strong>Demo Users:</strong></p>
-            <div class="demo-user" data-email="admin@example.com">
-                <span><strong>Admin</strong></span>
-                <span>admin@example.com</span>
+            <p><strong>User Demo:</strong> (klik untuk isi otomatis)</p>
+            <div class="demo-user" data-email="admin@admin.com"></div>
+                <span>Admin</span>
+                <strong>
+                    <i class="fas fa-check"></i>
+                </strong>
             </div>
-            <div class="demo-user" data-email="instruktur@example.com">
-                <span><strong>Instruktur</strong></span>
-                <span>instruktur@example.com</span>
-            </div>
-            <div class="demo-user" data-email="mahasiswa@example.com">
-                <span><strong>Mahasiswa</strong></span>
-                <span>mahasiswa@example.com</span>
-            </div>
-            <div style="color: #9ca3af; margin-top: 10px; font-size: 12px;">
-                Password semua: <strong>password123</strong>
-            </div>
-        </div>
+            
     </div>
 
     <script>
@@ -228,7 +218,7 @@
             user.addEventListener('click', () => {
                 const email = user.dataset.email;
                 emailInput.value = email;
-                passwordInput.value = 'password123';
+                passwordInput.value = 'secret';
                 passwordInput.focus();
             });
         });

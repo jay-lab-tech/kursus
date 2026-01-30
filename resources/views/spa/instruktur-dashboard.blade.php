@@ -288,7 +288,7 @@
             <ul class="sidebar-menu">
                 <li><a href="/instruktur-dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
                 <li><a href="#kelas"><i class="fas fa-book"></i> Kelas Mengajar</a></li>
-                <li><a href="/risalah"><i class="fas fa-file-alt"></i> Risalah</a></li>
+                <li><a href="/risalah-dashboard-new"><i class="fas fa-file-alt"></i> Risalah</a></li>
                 <li><a href="#jadwal"><i class="fas fa-calendar"></i> Jadwal</a></li>
                 <li><a href="#profil"><i class="fas fa-user"></i> Profil</a></li>
             </ul>

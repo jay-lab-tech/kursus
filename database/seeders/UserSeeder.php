@@ -23,6 +23,7 @@ class UserSeeder extends Seeder
             $admin->email = 'admin@example.com';
             $admin->password = Hash::make('password123');
             $admin->email_verified_at = now();
+            $admin->status = 1;
             $admin->save();
             // Update role after creation
             User::where('id', $admin->id)->update(['role' => 'admin']);
@@ -38,6 +39,7 @@ class UserSeeder extends Seeder
             $instruktur->email = 'instruktur@example.com';
             $instruktur->password = Hash::make('password123');
             $instruktur->email_verified_at = now();
+            $instruktur->status = 1;
             $instruktur->save();
             User::where('id', $instruktur->id)->update(['role' => 'instruktur']);
             $this->command->info('Instruktur user created: instruktur@example.com');
@@ -52,6 +54,7 @@ class UserSeeder extends Seeder
             $mahasiswa->email = 'mahasiswa@example.com';
             $mahasiswa->password = Hash::make('password123');
             $mahasiswa->email_verified_at = now();
+            $mahasiswa->status = 1;
             $mahasiswa->save();
             User::where('id', $mahasiswa->id)->update(['role' => 'mahasiswa']);
             $this->command->info('Mahasiswa user created: mahasiswa@example.com');

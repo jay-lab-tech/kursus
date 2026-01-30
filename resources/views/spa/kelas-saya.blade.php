@@ -150,7 +150,7 @@
             <li><a href="/dashboard"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
             <li data-role="mahasiswa all"><a href="/kelas-browse"><i class="fas fa-book"></i> <span>Browse Kelas</span></a></li>
             <li data-role="mahasiswa all"><a href="/kelas-saya" class="active"><i class="fas fa-graduation-cap"></i> <span>Kelas Saya</span></a></li>
-            <li data-role="instruktur admin" style="margin-top: 20px;"><a href="/risalah"><i class="fas fa-file-alt"></i> <span>Risalah</span></a></li>
+            <li data-role="instruktur admin" style="margin-top: 20px;"><a href="/risalah-dashboard-new"><i class="fas fa-file-alt"></i> <span>Risalah</span></a></li>
             <li style="margin-top: 20px;" data-role="admin"><a href="/data-management"><i class="fas fa-database"></i> <span>Data Management</span></a></li>
             <li data-role="admin"><a href="/admin"><i class="fas fa-shield"></i> <span>Admin Panel</span></a></li>
             <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">

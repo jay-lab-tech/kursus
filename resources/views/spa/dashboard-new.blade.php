@@ -91,6 +91,7 @@
             <li><a href="/kelas-saya"><i class="fas fa-graduation-cap"></i> <span>Kelas Saya</span></a></li>
             <li style="margin-top: 20px;"><a href="/data-management"><i class="fas fa-database"></i> <span>Data Management</span></a></li>
             <li style="margin-top: 10px;"><a href="/admin" style="color: rgba(255,255,255,0.6);"><i class="fas fa-lock"></i> <span>Admin Panel</span></a></li>
+            <li style="margin-top: 10px;"><a href="/risalah-dashboard-new" style="color: rgba(255,255,255,0.8);"><i class="fas fa-file-alt"></i> <span>Risalah</span></a></li>
             <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
             <li><button onclick="logout()" style="background: none; border: none; color: rgba(255,255,255,0.8); width: 100%; text-align: left; padding: 12px 15px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: inherit; font-family: inherit;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></button></li>
         </ul>
@@ -112,6 +113,7 @@
                         <p style="margin: 0; font-size: 12px; color: #6b7280;" id="userRole">Role</p>
                     </div>
                 </div>
+                
             </div>
         </div>
 

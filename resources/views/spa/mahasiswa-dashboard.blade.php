@@ -354,6 +354,7 @@
                 <li><a href="/mahasiswa-dashboard" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
                 <li><a href="#kelas"><i class="fas fa-book"></i> Kelas</a></li>
                 <li><a href="#jadwal"><i class="fas fa-calendar"></i> Jadwal</a></li>
+                <li><a href="/risalah-dashboard"><i class="fas fa-file-alt"></i> Risalah</a></li>
                 <li><a href="#profil"><i class="fas fa-user"></i> Profil</a></li>
             </ul>
             <div class="logout-btn">
