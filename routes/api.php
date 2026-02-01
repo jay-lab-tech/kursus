@@ -63,7 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/instruktur', [InstrukturController::class, 'store'])->middleware('role.authorize:admin');
     Route::put('/instruktur/{id}', [InstrukturController::class, 'update'])->middleware('role.authorize:admin');
     Route::delete('/instruktur/{id}', [InstrukturController::class, 'destroy'])->middleware('role.authorize:admin');
-});
+}); // End of Instruktur routes
 
 // Kelas routes - IMPORTANT: /kelas/available MUST come before /kelas/{id} to avoid route conflict
 Route::get('/kelas/available', [KelasController::class, 'getAvailableKelas']);
