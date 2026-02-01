@@ -30,10 +30,29 @@ class KelasController extends Controller
             // Pagination
             $perPage = $request->get('per_page', 15);
             $kelas = $query->paginate((int)$perPage);
-            
+
+            // Normalize items so `instruktur` always contains an id and nama (fallback to users.name)
+            $items = collect($kelas->items())->map(function ($k) {
+                $k->loadMissing('instruktur.user');
+                $instr = $k->instruktur;
+                $nama = null;
+                if ($instr) {
+                    $nama = $instr->nama ?? ($instr->user->name ?? null);
+                }
+                // fallback: if no instruktur record but instruktur_id points to users table
+                if (!$nama && $k->instruktur_id) {
+                    $user = \App\Models\User::find($k->instruktur_id);
+                    if ($user) $nama = $user->name;
+                }
+
+                $arr = $k->toArray();
+                $arr['instruktur'] = $instr ? ['id' => $instr->id, 'nama' => $nama] : ($nama ? ['id' => $k->instruktur_id, 'nama' => $nama] : null);
+                return $arr;
+            })->all();
+
             return response()->json([
                 'success' => true,
-                'data' => $kelas->items(),
+                'data' => $items,
                 'pagination' => [
                     'total' => $kelas->total(),
                     'per_page' => $kelas->perPage(),
@@ -58,7 +77,8 @@ class KelasController extends Controller
     {
         try {
             $validated = $request->validate([
-                'instruktur_id' => 'nullable|exists:instruktur,id',
+                // instruktur is stored as a user with role 'instruktur'
+                'instruktur_id' => 'nullable|exists:users,id',
                 'kode_kelas' => 'required|string',
                 'nama_kelas' => 'required|string|max:255',
                 'kapasitas' => 'nullable|integer|min:1',
@@ -89,10 +109,23 @@ class KelasController extends Controller
                     'message' => 'Kelas not found'
                 ], 404);
             }
-            
+            $kelas->loadMissing('instruktur.user', 'mahasiswa', 'jadwal');
+            $instr = $kelas->instruktur;
+            $nama = null;
+            if ($instr) {
+                $nama = $instr->nama ?? ($instr->user->name ?? null);
+            }
+            if (!$nama && $kelas->instruktur_id) {
+                $user = \App\Models\User::find($kelas->instruktur_id);
+                if ($user) $nama = $user->name;
+            }
+
+            $arr = $kelas->toArray();
+            $arr['instruktur'] = $instr ? ['id' => $instr->id, 'nama' => $nama] : ($nama ? ['id' => $kelas->instruktur_id, 'nama' => $nama] : null);
+
             return response()->json([
                 'success' => true,
-                'data' => $kelas->load('instruktur', 'mahasiswa', 'jadwal')
+                'data' => $arr
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -119,7 +152,7 @@ class KelasController extends Controller
             }
             
             $validated = $request->validate([
-                'instruktur_id' => 'nullable|exists:instruktur,id',
+                'instruktur_id' => 'nullable|exists:users,id',
                 'kode_kelas' => 'nullable|unique:kelas,kode_kelas,' . $id,
                 'nama_kelas' => 'nullable|string|max:255',
                 'kapasitas' => 'nullable|integer|min:1',

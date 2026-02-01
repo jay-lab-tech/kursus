@@ -11,7 +11,7 @@ class Instruktur extends Model
     use HasFactory;
 
     protected $table = 'instruktur';
-    protected $fillable = ['user_id', 'nip', 'nama', 'spesialisasi', 'no_hp', 'alamat'];
+    protected $fillable = ['nip', 'nama', 'keahlian', 'spesialisasi', 'no_hp', 'alamat'];
 
     public function user()
     {

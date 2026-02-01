@@ -88,16 +88,20 @@
         }
         .modal-overlay.active { display: flex; }
         .modal-content { 
-            background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%;
+            background: white; padding: 20px; border-radius: 10px; max-width: 550px; width: 90%;
+            max-height: 85vh; overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
         
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #374151; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 3px; font-weight: 600; color: #374151; font-size: 12px; }
         .form-group input, .form-group select, .form-group textarea { 
-            width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 5px;
-            font-size: 14px;
+            width: 100%; padding: 6px 8px; border: 1px solid #d1d5db; border-radius: 4px;
+            font-size: 13px;
         }
+        
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .form-grid-2 .form-group { margin-bottom: 0; }
         
         .badge-role {
             display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
@@ -124,7 +128,6 @@
             <li data-role="admin"><a href="#" onclick="selectModule('instruktur'); return false;" class="nav-link" data-module="instruktur"><i class="fas fa-chalkboard-user"></i> <span>Instruktur</span></a></li>
             <li data-role="admin"><a href="#" onclick="selectModule('kelas'); return false;" class="nav-link" data-module="kelas"><i class="fas fa-book"></i> <span>Kelas</span></a></li>
             <li data-role="admin"><a href="#" onclick="selectModule('jadwal'); return false;" class="nav-link" data-module="jadwal"><i class="fas fa-calendar"></i> <span>Jadwal</span></a></li>
-            <li data-role="admin"><a href="#" onclick="selectModule('surat'); return false;" class="nav-link" data-module="surat"><i class="fas fa-envelope"></i> <span>Surat</span></a></li>
             <li data-role="instruktur admin" style="margin-top: 20px;"><a href="/risalah-dashboard-new" class="nav-link"><i class="fas fa-file-alt"></i> <span>Risalah</span></a></li>
             <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
             <li><a href="#" onclick="logout(); return false;"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
@@ -190,9 +193,9 @@
     <!-- Add/Edit Modal -->
     <div class="modal-overlay" id="formModal">
         <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h4 style="margin: 0;" id="modalTitle">Add Mahasiswa</h4>
-                <button onclick="closeModal(); return false;" style="background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h4 style="margin: 0; font-size: 16px;" id="modalTitle">Add Mahasiswa</h4>
+                <button onclick="closeModal(); return false;" style="background: none; border: none; font-size: 20px; cursor: pointer; padding: 0;">×</button>
             </div>
             <form id="dataForm" onsubmit="submitForm(event); return false;">
                 <!-- User Fields -->
@@ -278,26 +281,95 @@
                 </div>
 
                 <!-- Instruktur Fields -->
-                <div class="form-group" id="fieldNip" style="display: none;">
-                    <label>NIP *</label>
-                    <input type="text" id="formNip" placeholder="e.g., NIP-001-2024">
-                </div>
-                <div class="form-group" id="fieldSpesialisasi" style="display: none;">
-                    <label>Spesialisasi *</label>
-                    <input type="text" id="formSpesialisasi" placeholder="e.g., Web Development">
-                </div>
-                <div class="form-group" id="fieldNoHp" style="display: none;">
-                    <label>No. HP</label>
-                    <input type="text" id="formNoHp" placeholder="e.g., 08123456789">
-                </div>
-                <div class="form-group" id="fieldAlamat" style="display: none;">
-                    <label>Alamat</label>
-                    <textarea id="formAlamat" placeholder="Alamat lengkap" style="height: 80px; resize: vertical;"></textarea>
+                <div class="form-grid-2">
+                    <div class="form-group" id="fieldInstrukturNama" style="display: none;">
+                        <label>Nama *</label>
+                        <input type="text" id="formInstrukturNama" placeholder="Nama instruktur">
+                    </div>
+                    <div class="form-group" id="fieldNip" style="display: none;">
+                        <label>NIP *</label>
+                        <input type="text" id="formNip" placeholder="NIP-001">
+                    </div>
+                    <div class="form-group" id="fieldKeahlian" style="display: none;">
+                        <label>Keahlian</label>
+                        <input type="text" id="formKeahlian" placeholder="e.g., Programming">
+                    </div>
+                    <div class="form-group" id="fieldSpesialisasi" style="display: none;">
+                        <label>Spesialisasi</label>
+                        <input type="text" id="formSpesialisasi" placeholder="Web Dev">
+                    </div>
+                    <div class="form-group" id="fieldNoHp" style="display: none;">
+                        <label>No. HP</label>
+                        <input type="text" id="formNoHp" placeholder="081234567890">
+                    </div>
+                    <div class="form-group" id="fieldAlamat" style="display: none; grid-column: 1 / -1;">
+                        <label>Alamat</label>
+                        <textarea id="formAlamat" placeholder="Alamat lengkap" style="height: 45px; resize: vertical;"></textarea>
+                    </div>
                 </div>
 
-                <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" class="btn-custom btn-secondary-custom" onclick="closeModal(); return false;">Cancel</button>
-                    <button type="submit" class="btn-custom btn-primary-custom">Save</button>
+                <!-- Mahasiswa Fields -->
+                <div class="form-grid-2">
+                    <div class="form-group" id="fieldMahasiswaNama" style="display: none;">
+                        <label>Nama *</label>
+                        <input type="text" id="formMahasiswaNama" placeholder="Nama mahasiswa">
+                    </div>
+                    <div class="form-group" id="fieldNim" style="display: none;">
+                        <label>NIM *</label>
+                        <input type="text" id="formNim" placeholder="NIM-001">
+                    </div>
+                    <div class="form-group" id="fieldJurusan" style="display: none;">
+                        <label>Jurusan</label>
+                        <input type="text" id="formJurusan" placeholder="Teknik Informatika">
+                    </div>
+                    <div class="form-group" id="fieldAngkatan" style="display: none;">
+                        <label>Angkatan</label>
+                        <input type="number" id="formAngkatan" placeholder="2024" min="1900" max="2099">
+                    </div>
+                    <div class="form-group" id="fieldMahasiswaNoHp" style="display: none;">
+                        <label>No. HP</label>
+                        <input type="text" id="formMahasiswaNoHp" placeholder="081234567890">
+                    </div>
+                    <div class="form-group" id="fieldMahasiswaAlamat" style="display: none; grid-column: 1 / -1;">
+                        <label>Alamat</label>
+                        <textarea id="formMahasiswaAlamat" placeholder="Alamat lengkap" style="height: 45px; resize: vertical;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Disposisi/Surat Fields -->
+                <div class="form-group" id="fieldSuratMasukId" style="display: none;">
+                    <label>Surat Masuk *</label>
+                    <select id="formSuratMasukId">
+                        <option value="">-- Select Surat --</option>
+                    </select>
+                </div>
+                <div class="form-group" id="fieldDisposisiUserId" style="display: none;">
+                    <label>User (Penerima) *</label>
+                    <select id="formDisposisiUserId">
+                        <option value="">-- Select User --</option>
+                    </select>
+                </div>
+                <div class="form-group" id="fieldDisposisiCatatan" style="display: none;">
+                    <label>Catatan</label>
+                    <textarea id="formDisposisiCatatan" placeholder="Catatan disposisi" style="height: 80px; resize: vertical;"></textarea>
+                </div>
+                <div class="form-group" id="fieldDisposisiStatus" style="display: none;">
+                    <label>Status</label>
+                    <select id="formDisposisiStatus">
+                        <option value="">-- Select Status --</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-group" id="fieldDisposisiTanggal" style="display: none;">
+                    <label>Tanggal Disposisi</label>
+                    <input type="date" id="formDisposisiTanggal">
+                </div>
+
+                <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 15px;">
+                    <button type="button" class="btn-custom btn-secondary-custom" onclick="closeModal(); return false;" style="padding: 8px 15px; font-size: 12px;">Cancel</button>
+                    <button type="submit" class="btn-custom btn-primary-custom" style="padding: 8px 15px; font-size: 12px;">Save</button>
                 </div>
             </form>
         </div>
@@ -349,11 +421,10 @@
         // ========== LOAD MODULE DATA ==========
         async function loadModuleData(module) {
             const config = {
-                mahasiswa: { title: 'Data Mahasiswa', desc: 'Manage student information', endpoint: 'users?role=mahasiswa' },
-                instruktur: { title: 'Data Instruktur', desc: 'Manage instructor information', endpoint: 'users?role=instruktur' },
+                mahasiswa: { title: 'Data Mahasiswa', desc: 'Manage student information', endpoint: 'mahasiswa' },
+                instruktur: { title: 'Data Instruktur', desc: 'Manage instructor information', endpoint: 'instruktur' },
                 kelas: { title: 'Data Kelas', desc: 'Manage classes', endpoint: 'kelas' },
-                jadwal: { title: 'Data Jadwal', desc: 'Manage schedules', endpoint: 'jadwal' },
-                surat: { title: 'Data Surat', desc: 'Manage correspondence', endpoint: 'surat-masuk' }
+                jadwal: { title: 'Data Jadwal', desc: 'Manage schedules', endpoint: 'jadwal' }
             };
 
             const cfg = config[module] || config.mahasiswa;
@@ -455,10 +526,41 @@
                         </td>
                     </tr>
                 `).join('');
+            } else if (module === 'instruktur') {
+                updateTableHeaders(['Nama', 'NIP', 'Spesialisasi', 'No HP', 'Alamat', 'Actions']);
+                tbody.innerHTML = data.map(item => `
+                    <tr>
+                        <td><strong>${item.nama || '-'}</strong></td>
+                        <td>${item.nip || '-'}</td>
+                        <td>${item.spesialisasi || '-'}</td>
+                        <td>${item.no_hp || '-'}</td>
+                        <td>${item.alamat || '-'}</td>
+                        <td>
+                            ${checkPermission('update', module) ? `<button class="btn-custom btn-secondary-custom" onclick="editItem(${item.id}); return false;" style="padding: 5px 10px; font-size: 12px;"><i class="fas fa-edit"></i></button>` : ''}
+                            ${checkPermission('delete', module) ? `<button class="btn-custom" style="background: #ef4444; color: white; padding: 5px 10px; font-size: 12px; cursor: pointer;" onclick="deleteItem(${item.id}); return false;"><i class="fas fa-trash"></i></button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+            } else if (module === 'mahasiswa') {
+                updateTableHeaders(['Nama', 'NIM', 'Jurusan', 'Angkatan', 'No HP', 'Alamat', 'Actions']);
+                tbody.innerHTML = data.map(item => `
+                    <tr>
+                        <td><strong>${item.nama || '-'}</strong></td>
+                        <td>${item.nim || '-'}</td>
+                        <td>${item.jurusan || '-'}</td>
+                        <td>${item.angkatan || '-'}</td>
+                        <td>${item.no_hp || '-'}</td>
+                        <td>${item.alamat || '-'}</td>
+                        <td>
+                            ${checkPermission('update', module) ? `<button class="btn-custom btn-secondary-custom" onclick="editItem(${item.id}); return false;" style="padding: 5px 10px; font-size: 12px;"><i class="fas fa-edit"></i></button>` : ''}
+                            ${checkPermission('delete', module) ? `<button class="btn-custom" style="background: #ef4444; color: white; padding: 5px 10px; font-size: 12px; cursor: pointer;" onclick="deleteItem(${item.id}); return false;"><i class="fas fa-trash"></i></button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
             } else {
                 updateTableHeaders(['ID', 'Name', 'Email', 'Role', 'Status', 'Actions']);
                 tbody.innerHTML = data.map(item => {
-                    const roleClass = `badge-${item.role || 'mahasiswa'}`;
+                    const roleClass = `badge-${item.role || 'user'}`;
                     return `
                         <tr>
                             <td>${item.id}</td>
@@ -486,9 +588,9 @@
             allFields.forEach(f => f.style.display = 'none');
 
             if (module === 'mahasiswa') {
-                ['fieldName', 'fieldEmail', 'fieldPassword', 'fieldRole', 'fieldStatus'].forEach(f => document.getElementById(f).style.display = 'block');
+                ['fieldMahasiswaNama', 'fieldNim', 'fieldJurusan', 'fieldAngkatan', 'fieldMahasiswaNoHp', 'fieldMahasiswaAlamat'].forEach(f => document.getElementById(f).style.display = 'block');
             } else if (module === 'instruktur') {
-                ['fieldName', 'fieldEmail', 'fieldPassword', 'fieldRole', 'fieldStatus', 'fieldNip', 'fieldSpesialisasi', 'fieldNoHp', 'fieldAlamat'].forEach(f => document.getElementById(f).style.display = 'block');
+                ['fieldInstrukturNama', 'fieldNip', 'fieldKeahlian', 'fieldSpesialisasi', 'fieldNoHp', 'fieldAlamat'].forEach(f => document.getElementById(f).style.display = 'block');
             } else if (module === 'kelas') {
                 ['fieldKelasInstruktur', 'fieldKodeKelas', 'fieldNamaKelas', 'fieldKapasitas', 'fieldTahunAkademik'].forEach(f => document.getElementById(f).style.display = 'block');
             } else if (module === 'jadwal') {
@@ -496,40 +598,53 @@
                 // Reset instruktur display
                 document.getElementById('formJadwalInstrukturDisplay').value = '';
                 document.getElementById('formJadwalInstruktur').value = '';
+            } else if (module === 'surat') {
+                ['fieldSuratMasukId', 'fieldDisposisiUserId', 'fieldDisposisiCatatan', 'fieldDisposisiStatus', 'fieldDisposisiTanggal'].forEach(f => document.getElementById(f).style.display = 'block');
             }
         }
 
         async function loadInstrukturDropdown() {
             const select = document.getElementById('formInstruktur');
             if (!select) return;
-
             try {
                 const token = localStorage.getItem('auth_token');
-                const url = `${API_BASE}/instruktur/dropdown`;
-                const response = await fetch(url, { 
-                    headers: { 'Authorization': `Bearer ${token}` } 
-                });
-                
-                if (response.ok) {
+                // prefer users API that can filter by role, fallback to module endpoints
+                const urlCandidates = [
+                    `${API_BASE}/users?role=instruktur`,
+                    `${API_BASE}/instruktur`,
+                    `${API_BASE}/instruktur/dropdown`
+                ];
+
+                let response = null;
+                for (const url of urlCandidates) {
+                    try {
+                        response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+                        if (response && response.ok) break;
+                    } catch (err) {
+                        response = null;
+                    }
+                }
+
+                if (response && response.ok) {
                     const data = await response.json();
-                    const instrukturList = data.data || [];
-                    
+                    const instrukturList = Array.isArray(data) ? data : (data.data || []);
+
                     if (instrukturList.length === 0) {
                         select.innerHTML = '<option value="">-- Tidak ada instruktur --</option>';
                         return;
                     }
-                    
+
                     const options = instrukturList
-                        .map(i => `<option value="${i.id}">${i.nama}</option>`)
+                        .map(i => `<option value="${i.id}">${i.nama || i.name}</option>`)
                         .join('');
-                    
+
                     select.innerHTML = '<option value="">-- Select Instruktur --</option>' + options;
                 } else {
                     select.innerHTML = '<option value="">-- Error --</option>';
                 }
-            } catch (e) { 
-                const select = document.getElementById('formInstruktur');
-                if (select) select.innerHTML = '<option value="">-- Error loading --</option>';
+            } catch (e) {
+                const selectEl = document.getElementById('formInstruktur');
+                if (selectEl) selectEl.innerHTML = '<option value="">-- Error loading --</option>';
             }
         }
 
@@ -690,17 +805,22 @@
             }
 
             // Custom validation for visible fields
-            if (currentModule === 'mahasiswa' || currentModule === 'instruktur') {
-                if (!document.getElementById('formName').value.trim()) {
-                    alert('Name is required');
+            if (currentModule === 'mahasiswa') {
+                if (!document.getElementById('formMahasiswaNama').value.trim()) {
+                    alert('Nama is required');
                     return false;
                 }
-                if (!document.getElementById('formEmail').value.trim()) {
-                    alert('Email is required');
+                if (!document.getElementById('formNim').value.trim()) {
+                    alert('NIM is required');
                     return false;
                 }
-                if (!document.getElementById('formRole').value) {
-                    alert('Role is required');
+            } else if (currentModule === 'instruktur') {
+                if (!document.getElementById('formInstrukturNama').value.trim()) {
+                    alert('Nama is required');
+                    return false;
+                }
+                if (!document.getElementById('formNip').value.trim()) {
+                    alert('NIP is required');
                     return false;
                 }
             } else if (currentModule === 'kelas') {
@@ -733,6 +853,15 @@
                     alert('Jam Selesai is required');
                     return false;
                 }
+            } else if (currentModule === 'surat') {
+                if (!document.getElementById('formSuratMasukId').value) {
+                    alert('Surat Masuk is required');
+                    return false;
+                }
+                if (!document.getElementById('formDisposisiUserId').value) {
+                    alert('Penerima (User) is required');
+                    return false;
+                }
             }
 
             let formData = {};
@@ -759,24 +888,55 @@
                 url = isEdit ? `${API_BASE}/jadwal/${editingUserId}` : `${API_BASE}/jadwal`;
             } else if (currentModule === 'instruktur') {
                 // Validate required fields for instruktur
-                if (!document.getElementById('formNip').value.trim()) {
-                    alert('NIP is required');
+                if (!document.getElementById('formInstrukturNama').value.trim()) {
+                    alert('Nama is required');
                     return false;
                 }
-                if (!document.getElementById('formSpesialisasi').value.trim()) {
-                    alert('Spesialisasi is required');
+                if (!document.getElementById('formNip').value.trim()) {
+                    alert('NIP is required');
                     return false;
                 }
 
                 // For instruktur: use instruktur API endpoint
                 formData = {
+                    nama: document.getElementById('formInstrukturNama').value,
                     nip: document.getElementById('formNip').value,
+                    keahlian: document.getElementById('formKeahlian').value,
                     spesialisasi: document.getElementById('formSpesialisasi').value,
                     no_hp: document.getElementById('formNoHp').value,
-                    alamat: document.getElementById('formAlamat').value,
-                    nama: document.getElementById('formName').value
+                    alamat: document.getElementById('formAlamat').value
                 };
                 url = isEdit ? `${API_BASE}/instruktur/${editingUserId}` : `${API_BASE}/instruktur`;
+            } else if (currentModule === 'mahasiswa') {
+                // Validate required fields for mahasiswa
+                if (!document.getElementById('formMahasiswaNama').value.trim()) {
+                    alert('Nama is required');
+                    return false;
+                }
+                if (!document.getElementById('formNim').value.trim()) {
+                    alert('NIM is required');
+                    return false;
+                }
+
+                // For mahasiswa: use mahasiswa API endpoint
+                formData = {
+                    nama: document.getElementById('formMahasiswaNama').value,
+                    nim: document.getElementById('formNim').value,
+                    jurusan: document.getElementById('formJurusan').value,
+                    angkatan: parseInt(document.getElementById('formAngkatan').value) || null,
+                    no_hp: document.getElementById('formMahasiswaNoHp').value,
+                    alamat: document.getElementById('formMahasiswaAlamat').value
+                };
+                url = isEdit ? `${API_BASE}/mahasiswa/${editingUserId}` : `${API_BASE}/mahasiswa`;
+            } else if (currentModule === 'surat') {
+                formData = {
+                    surat_masuk_id: parseInt(document.getElementById('formSuratMasukId').value) || null,
+                    user_id: parseInt(document.getElementById('formDisposisiUserId').value) || null,
+                    catatan: document.getElementById('formDisposisiCatatan').value || '',
+                    status: document.getElementById('formDisposisiStatus').value || 'pending',
+                    tanggal_disposisi: document.getElementById('formDisposisiTanggal').value || null
+                };
+                url = isEdit ? `${API_BASE}/disposisi/${editingUserId}` : `${API_BASE}/disposisi`;
             } else {
                 formData = {
                     name: document.getElementById('formName').value,
@@ -852,6 +1012,7 @@
                 if (currentModule === 'kelas') url = `${API_BASE}/kelas/${id}`;
                 else if (currentModule === 'jadwal') url = `${API_BASE}/jadwal/${id}`;
                 else if (currentModule === 'instruktur') url = `${API_BASE}/instruktur/${id}`;
+                else if (currentModule === 'mahasiswa') url = `${API_BASE}/mahasiswa/${id}`;
                 
                 const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!response.ok) {
@@ -886,15 +1047,19 @@
                     document.getElementById('formJamSelesai').value = item.jam_selesai;
                     document.getElementById('formRuangan').value = item.ruangan;
                 } else if (currentModule === 'instruktur') {
-                    document.getElementById('formName').value = item.nama;
-                    document.getElementById('formEmail').value = item.user?.email || '';
-                    document.getElementById('formRole').value = item.user?.role || 'instruktur';
-                    document.getElementById('formStatus').value = item.user?.status || '1';
-                    document.getElementById('formPassword').value = '';
+                    document.getElementById('formInstrukturNama').value = item.nama || '';
                     document.getElementById('formNip').value = item.nip || '';
+                    document.getElementById('formKeahlian').value = item.keahlian || '';
                     document.getElementById('formSpesialisasi').value = item.spesialisasi || '';
                     document.getElementById('formNoHp').value = item.no_hp || '';
                     document.getElementById('formAlamat').value = item.alamat || '';
+                } else if (currentModule === 'mahasiswa') {
+                    document.getElementById('formMahasiswaNama').value = item.nama || '';
+                    document.getElementById('formNim').value = item.nim || '';
+                    document.getElementById('formJurusan').value = item.jurusan || '';
+                    document.getElementById('formAngkatan').value = item.angkatan || '';
+                    document.getElementById('formMahasiswaNoHp').value = item.no_hp || '';
+                    document.getElementById('formMahasiswaAlamat').value = item.alamat || '';
                 } else {
                     document.getElementById('formName').value = item.name;
                     document.getElementById('formEmail').value = item.email;
@@ -921,6 +1086,8 @@
                     let url = `${API_BASE}/users/${id}`;
                     if (currentModule === 'kelas') url = `${API_BASE}/kelas/${id}`;
                     else if (currentModule === 'jadwal') url = `${API_BASE}/jadwal/${id}`;
+                    else if (currentModule === 'instruktur') url = `${API_BASE}/instruktur/${id}`;
+                    else if (currentModule === 'mahasiswa') url = `${API_BASE}/mahasiswa/${id}`;
                     
                     const response = await fetch(url, {
                         method: 'DELETE',

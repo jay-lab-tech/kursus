@@ -26,10 +26,28 @@ class JadwalController extends Controller
             // Pagination
             $perPage = $request->get('per_page', 15);
             $jadwal = $query->paginate((int)$perPage);
+
+            // Normalize items so `instruktur` always contains an id and nama
+            $items = collect($jadwal->items())->map(function ($j) {
+                $j->loadMissing('instruktur.user');
+                $instr = $j->instruktur;
+                $nama = null;
+                if ($instr) {
+                    $nama = $instr->nama ?? ($instr->user->name ?? null);
+                }
+                if (!$nama && $j->instruktur_id) {
+                    $user = \App\Models\User::find($j->instruktur_id);
+                    if ($user) $nama = $user->name;
+                }
+
+                $arr = $j->toArray();
+                $arr['instruktur'] = $instr ? ['id' => $instr->id, 'nama' => $nama] : ($nama ? ['id' => $j->instruktur_id, 'nama' => $nama] : null);
+                return $arr;
+            })->all();
             
             return response()->json([
                 'success' => true,
-                'data' => $jadwal->items(),
+                'data' => $items,
                 'pagination' => [
                     'total' => $jadwal->total(),
                     'per_page' => $jadwal->perPage(),
@@ -53,14 +71,29 @@ class JadwalController extends Controller
     public function store(Request $request)
     {
         try {
+            // Custom validation for instruktur_id: allow either instruktur table or users table
             $validated = $request->validate([
                 'kelas_id' => 'nullable|exists:kelas,id',
-                'instruktur_id' => 'nullable|exists:instruktur,id',
+                'instruktur_id' => 'nullable',
                 'hari_id' => 'nullable|exists:hari,id',
                 'jam_mulai' => 'nullable|date_format:H:i',
                 'jam_selesai' => 'nullable|date_format:H:i',
                 'ruangan' => 'nullable|string|max:255',
             ]);
+
+            // Check instruktur_id: must exist in either instruktur or users table
+            if ($validated['instruktur_id'] ?? null) {
+                $instrId = $validated['instruktur_id'];
+                $existsInInstruktur = \Modules\Academic\Models\Instruktur::where('id', $instrId)->exists();
+                $existsInUsers = \App\Models\User::where('id', $instrId)->exists();
+                
+                if (!$existsInInstruktur && !$existsInUsers) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'The selected instruktur id is invalid.'
+                    ], 422);
+                }
+            }
 
             $jadwal = Jadwal::create($validated);
             return response()->json([
@@ -87,9 +120,23 @@ class JadwalController extends Controller
                 ], 404);
             }
             
+            $jadwal->loadMissing('kelas', 'instruktur.user', 'hari');
+            $instr = $jadwal->instruktur;
+            $nama = null;
+            if ($instr) {
+                $nama = $instr->nama ?? ($instr->user->name ?? null);
+            }
+            if (!$nama && $jadwal->instruktur_id) {
+                $user = \App\Models\User::find($jadwal->instruktur_id);
+                if ($user) $nama = $user->name;
+            }
+
+            $arr = $jadwal->toArray();
+            $arr['instruktur'] = $instr ? ['id' => $instr->id, 'nama' => $nama] : ($nama ? ['id' => $jadwal->instruktur_id, 'nama' => $nama] : null);
+
             return response()->json([
                 'success' => true,
-                'data' => $jadwal->load('kelas', 'instruktur', 'hari')
+                'data' => $arr
             ]);
         } catch (\Exception $e) {
             return response()->json([

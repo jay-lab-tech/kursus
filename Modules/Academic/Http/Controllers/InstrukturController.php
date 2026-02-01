@@ -78,9 +78,9 @@ class InstrukturController extends Controller
     {
         try {
             $validated = $request->validate([
-                'user_id' => 'nullable|exists:users,id',
-                'nip' => 'required|unique:academic.instruktur,nip',
+                'nip' => 'required|unique:instruktur,nip',
                 'nama' => 'required|string|max:255',
+                'keahlian' => 'nullable|string|max:255',
                 'spesialisasi' => 'nullable|string|max:255',
                 'no_hp' => 'nullable|string',
                 'alamat' => 'nullable|string',
@@ -140,8 +140,9 @@ class InstrukturController extends Controller
             }
             
             $validated = $request->validate([
-                'nip' => 'nullable|unique:academic.instruktur,nip,' . $id,
-                'nama' => 'nullable|string|max:255',
+                'nip' => 'required|unique:instruktur,nip,' . $id,
+                'nama' => 'required|string|max:255',
+                'keahlian' => 'nullable|string|max:255',
                 'spesialisasi' => 'nullable|string|max:255',
                 'no_hp' => 'nullable|string',
                 'alamat' => 'nullable|string',

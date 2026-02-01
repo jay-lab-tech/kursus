@@ -9,6 +9,7 @@ use Modules\Academic\Http\Controllers\InstrukturController;
 use Modules\Academic\Http\Controllers\KelasController;
 use Modules\Academic\Http\Controllers\JadwalController;
 use Modules\Academic\Http\Controllers\RisalahController;
+use Modules\Academic\Http\Controllers\HariController;
 use Modules\Academic\Http\Controllers\Api\AcademicApiController;
 use Modules\Disposition\Http\Controllers\DisposisiController;
 
@@ -78,6 +79,10 @@ Route::get('/jadwal/{id}', [JadwalController::class, 'show']);
 Route::post('/jadwal', [JadwalController::class, 'store'])->middleware(['auth:sanctum', 'role.authorize:admin,instruktur']);
 Route::put('/jadwal/{id}', [JadwalController::class, 'update'])->middleware(['auth:sanctum', 'role.authorize:admin,instruktur']);
 Route::delete('/jadwal/{id}', [JadwalController::class, 'destroy'])->middleware(['auth:sanctum', 'role.authorize:admin']);
+
+// Hari routes
+Route::get('/hari', [HariController::class, 'index']);
+Route::get('/hari/{id}', [HariController::class, 'show']);
 
 // Disposisi routes
 Route::get('/disposisi', [DisposisiController::class, 'index']);

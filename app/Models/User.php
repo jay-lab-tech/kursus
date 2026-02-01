@@ -12,6 +12,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Permission\Traits\HasRoles;
+use Modules\Academic\Models\Mahasiswa;
+use Modules\Academic\Models\Instruktur;
 
 class User extends Authenticatable implements HasMedia, MustVerifyEmail
 {
